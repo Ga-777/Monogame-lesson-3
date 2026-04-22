@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Threading;
 
 namespace Monogame_lesson_3
 {
@@ -14,6 +15,7 @@ namespace Monogame_lesson_3
         Rectangle window, greyTribblerect, tribbleBrownrect, tribbleCreamrect,tribbleOrangerect;
         Texture2D tribbleGreyTexture, tribbleBrownTexture, tribbleCreamTexture, tribbleOrangeTexture, living_roomBackground, bedroomTexture, bathroomTexture, kitchenTexture;
         SoundEffect tribbleCoo, openingDoor;
+        MouseState mouseState;
         Random locate = new Random(), room = new Random();
         int roomNumber;
         public Game1()
@@ -31,7 +33,7 @@ namespace Monogame_lesson_3
             _graphics.PreferredBackBufferHeight = 600;
             _graphics.ApplyChanges();
             greyTribblerect = new Rectangle(300, 100, 100, 100);
-            tribbleGreySpeed = new Vector2(3, 2);
+            tribbleGreySpeed = new Vector2(4, 2);
             tribbleBrownrect = new Rectangle(locate.Next(0, 700), locate.Next(0, 500), 100, 100);
             tribbleBrownSpeed = new Vector2(2, 0);
             tribbleCreamrect = new Rectangle(locate.Next(0, 700), locate.Next(0, 500), 100, 100);
@@ -61,8 +63,15 @@ namespace Monogame_lesson_3
 
         protected override void Update(GameTime gameTime)
         {
+            
+            
+            
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+
+
+            MouseState mouseState = Mouse.GetState();
             greyTribblerect.X += (int)tribbleGreySpeed.X;
             greyTribblerect.Y += (int)tribbleGreySpeed.Y;
             if (greyTribblerect.Left < window.Left || greyTribblerect.Right > window.Right)
@@ -91,6 +100,7 @@ namespace Monogame_lesson_3
                 tribbleBrownSpeed.Y *= -1;
                 tribbleCoo.Play();
             }
+            
             tribbleCreamrect.X += (int)tribbleCreamSpeed.X;
             tribbleCreamrect.Y += (int)tribbleCreamSpeed.Y;
             if (tribbleCreamrect.Left < window.Left || tribbleCreamrect.Right > window.Right)
@@ -123,7 +133,33 @@ namespace Monogame_lesson_3
                     tribbleOrangeSpeed.Y = 1;
                 }
             }
+            if (mouseState.LeftButton == ButtonState.Pressed)
+            {
+                if (greyTribblerect.Contains(mouseState.Position))
+                {
+                    
+                }
+                else if (tribbleBrownrect.Contains(mouseState.Position))
+                {
+                    tribbleBrownrect.X =  -10;
 
+
+                }
+                else if (tribbleCreamrect.Contains(mouseState.Position))
+                {
+                    tribbleCreamrect.X = locate.Next(0, 700);
+                    tribbleCreamrect.Y = locate.Next(0, 500);
+
+                }
+                else if (tribbleOrangerect.Contains(mouseState.Position))
+                { 
+                    tribbleOrangeSpeed.Y = 2;
+                }
+            }
+            if (tribbleCreamrect == tribbleBrownrect)
+            {
+                
+            }
             // TODO: Add your update logic here
 
             base.Update(gameTime);
