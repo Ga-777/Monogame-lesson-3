@@ -7,17 +7,30 @@ using System.Threading;
 
 namespace Monogame_lesson_3
 {
+    enum Screen
+    {
+        Intro,
+        TribbleYard,
+        EndScreen,
+        BlackHoleEnding
+
+    }
+
+
     public class Game1 : Game
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        
+        Screen screen;
         Vector2 tribbleGreySpeed, tribbleBrownSpeed, tribbleOrangeSpeed, tribbleCreamSpeed;
         Rectangle window, greyTribblerect, tribbleBrownrect, tribbleCreamrect,tribbleOrangerect;
-        Texture2D tribbleGreyTexture, tribbleBrownTexture, tribbleCreamTexture, tribbleOrangeTexture, living_roomBackground, bedroomTexture, bathroomTexture, kitchenTexture;
+        Texture2D tribbleGreyTexture, tribbleBrownTexture, tribbleCreamTexture, tribbleOrangeTexture, living_roomBackground, bedroomTexture, bathroomTexture, kitchenTexture, introTexture, blackHoleTexture;
         SoundEffect tribbleCoo, openingDoor;
         MouseState mouseState;
         Random locate = new Random(), room = new Random();
         int roomNumber;
+        SpriteFont text;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -32,6 +45,7 @@ namespace Monogame_lesson_3
             _graphics.PreferredBackBufferWidth = 800;
             _graphics.PreferredBackBufferHeight = 600;
             _graphics.ApplyChanges();
+            screen = Screen.Intro;
             greyTribblerect = new Rectangle(300, 100, 100, 100);
             tribbleGreySpeed = new Vector2(4, 2);
             tribbleBrownrect = new Rectangle(locate.Next(0, 700), locate.Next(0, 500), 100, 100);
@@ -57,6 +71,9 @@ namespace Monogame_lesson_3
             bedroomTexture = Content.Load<Texture2D>("bedroom");
             kitchenTexture = Content.Load<Texture2D>("kitchen");
             openingDoor = Content.Load<SoundEffect>("door_open");
+            introTexture = Content.Load<Texture2D>("intro");
+            blackHoleTexture = Content.Load<Texture2D>("blackhole");
+            text = Content.Load<SpriteFont>("text");
 
             // TODO: use this.Content to load your game content here
         }
@@ -72,95 +89,115 @@ namespace Monogame_lesson_3
 
 
             MouseState mouseState = Mouse.GetState();
-            greyTribblerect.X += (int)tribbleGreySpeed.X;
-            greyTribblerect.Y += (int)tribbleGreySpeed.Y;
-            if (greyTribblerect.Left < window.Left || greyTribblerect.Right > window.Right)
-            {
-                tribbleGreySpeed.X *= -1;
 
-                tribbleCoo.Play();
-            }
-            else if (greyTribblerect.Top < window.Top || greyTribblerect.Bottom > window.Bottom)
+            // TODO: Add your update logic here
+            if (screen == Screen.Intro)
             {
-                tribbleGreySpeed.Y *= -1;
-                tribbleCoo.Play();
-            }
-
-            tribbleBrownrect.X += (int)tribbleBrownSpeed.X;
-            tribbleBrownrect.Y += (int)tribbleBrownSpeed.Y;
-            if ( tribbleBrownrect.Right > window.Right - -100)
-            {
-                tribbleBrownrect.X = (-100);
-                roomNumber = room.Next(1, 4);
-                openingDoor.Play();
-                tribbleCoo.Play();
-            }
-            else if (tribbleBrownrect.Top < window.Top || tribbleBrownrect.Bottom > window.Bottom)
-            {
-                tribbleBrownSpeed.Y *= -1;
-                tribbleCoo.Play();
-            }
-            
-            tribbleCreamrect.X += (int)tribbleCreamSpeed.X;
-            tribbleCreamrect.Y += (int)tribbleCreamSpeed.Y;
-            if (tribbleCreamrect.Left < window.Left || tribbleCreamrect.Right > window.Right)
-            {
-                tribbleCreamrect.X = locate.Next(0, 700);
-                tribbleCreamSpeed.X *= -1;
-                tribbleCoo.Play();
-            }
-            else if (tribbleCreamrect.Top < window.Top || tribbleCreamrect.Bottom > window.Bottom)
-            {
-                tribbleCreamrect.Y = locate.Next(0, 500);
-                tribbleCreamSpeed.Y *= -1;
-                tribbleCoo.Play();
-            }
-            tribbleOrangerect.X += (int)tribbleOrangeSpeed.X;
-            tribbleOrangerect.Y += (int)tribbleOrangeSpeed.Y;
-            if (tribbleOrangerect.Left < window.Left || tribbleOrangerect.Right > window.Right)
-            {
-                tribbleOrangeSpeed.X *= -1;
-                tribbleCoo.Play();
-            }
-            else if ( tribbleOrangerect.Bottom > window.Bottom - -100)
-            {
-                
-                tribbleOrangerect.Y = -100;
-                tribbleOrangeSpeed.Y++;
-                tribbleCoo.Play();
-                if (tribbleOrangeSpeed.Y > 1000)
+                if (mouseState.LeftButton == ButtonState.Pressed)
                 {
-                    tribbleOrangeSpeed.Y = 1;
+                    screen = Screen.TribbleYard;
                 }
             }
-            if (mouseState.LeftButton == ButtonState.Pressed)
+            else if (tribbleOrangeSpeed.Y > 900 && screen == Screen.TribbleYard)
             {
-                if (greyTribblerect.Contains(mouseState.Position))
+                screen = Screen.BlackHoleEnding;
+                if (screen == Screen.BlackHoleEnding)
                 {
                     
                 }
-                else if (tribbleBrownrect.Contains(mouseState.Position))
+            }
+            else if (screen == Screen.TribbleYard)
+            {
+                greyTribblerect.X += (int)tribbleGreySpeed.X;
+                greyTribblerect.Y += (int)tribbleGreySpeed.Y;
+                if (greyTribblerect.Left < window.Left || greyTribblerect.Right > window.Right)
                 {
-                    tribbleBrownrect.X =  -10;
+                    tribbleGreySpeed.X *= -1;
 
-
+                    tribbleCoo.Play();
                 }
-                else if (tribbleCreamrect.Contains(mouseState.Position))
+                else if (greyTribblerect.Top < window.Top || greyTribblerect.Bottom > window.Bottom)
+                {
+                    tribbleGreySpeed.Y *= -1;
+                    tribbleCoo.Play();
+                }
+
+                tribbleBrownrect.X += (int)tribbleBrownSpeed.X;
+                tribbleBrownrect.Y += (int)tribbleBrownSpeed.Y;
+                if (tribbleBrownrect.Right > window.Right - -100)
+                {
+                    tribbleBrownrect.X = (-100);
+                    roomNumber = room.Next(1, 4);
+                    openingDoor.Play();
+                    tribbleCoo.Play();
+                }
+                else if (tribbleBrownrect.Top < window.Top || tribbleBrownrect.Bottom > window.Bottom)
+                {
+                    tribbleBrownSpeed.Y *= -1;
+                    tribbleCoo.Play();
+                }
+
+                tribbleCreamrect.X += (int)tribbleCreamSpeed.X;
+                tribbleCreamrect.Y += (int)tribbleCreamSpeed.Y;
+                if (tribbleCreamrect.Left < window.Left || tribbleCreamrect.Right > window.Right)
                 {
                     tribbleCreamrect.X = locate.Next(0, 700);
+                    tribbleCreamSpeed.X *= -1;
+                    tribbleCoo.Play();
+                }
+                else if (tribbleCreamrect.Top < window.Top || tribbleCreamrect.Bottom > window.Bottom)
+                {
                     tribbleCreamrect.Y = locate.Next(0, 500);
+                    tribbleCreamSpeed.Y *= -1;
+                    tribbleCoo.Play();
+                }
+                tribbleOrangerect.X += (int)tribbleOrangeSpeed.X;
+                tribbleOrangerect.Y += (int)tribbleOrangeSpeed.Y;
+                if (tribbleOrangerect.Left < window.Left || tribbleOrangerect.Right > window.Right)
+                {
+                    tribbleOrangeSpeed.X *= -1;
+                    tribbleCoo.Play();
+                }
+                else if (tribbleOrangerect.Bottom > window.Bottom - -100)
+                {
+
+                    tribbleOrangerect.Y = -100;
+                    tribbleOrangeSpeed.Y++;
+                    tribbleCoo.Play();
+                    if (tribbleOrangeSpeed.Y > 1000)
+                    {
+                        tribbleOrangeSpeed.Y = 1;
+
+                    }
+                }
+                if (mouseState.LeftButton == ButtonState.Pressed)
+                {
+                    if (greyTribblerect.Contains(mouseState.Position))
+                    {
+
+                    }
+                    else if (tribbleBrownrect.Contains(mouseState.Position))
+                    {
+                        tribbleBrownrect.X = -10;
+
+
+                    }
+                    else if (tribbleCreamrect.Contains(mouseState.Position))
+                    {
+                        tribbleCreamrect.X = locate.Next(0, 700);
+                        tribbleCreamrect.Y = locate.Next(0, 500);
+
+                    }
+                    else if (tribbleOrangerect.Contains(mouseState.Position))
+                    {
+                        tribbleOrangeSpeed.Y = 2;
+                    }
+                }
+                if (tribbleCreamrect == tribbleBrownrect)
+                {
 
                 }
-                else if (tribbleOrangerect.Contains(mouseState.Position))
-                { 
-                    tribbleOrangeSpeed.Y = 2;
-                }
             }
-            if (tribbleCreamrect == tribbleBrownrect)
-            {
-                
-            }
-            // TODO: Add your update logic here
 
             base.Update(gameTime);
         }
@@ -169,26 +206,43 @@ namespace Monogame_lesson_3
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             _spriteBatch.Begin();
-            if (roomNumber == 1)
+            
+            if (screen == Screen.Intro)
             {
-                _spriteBatch.Draw(living_roomBackground, window, Color.White);
+                _spriteBatch.Draw(introTexture, window, Color.White);
             }
-            else if (roomNumber == 2)
+            else if (screen == Screen.TribbleYard)
             {
-                _spriteBatch.Draw(bathroomTexture, window, Color.White);
+                if (roomNumber == 1)
+                {
+                    _spriteBatch.Draw(living_roomBackground, window, Color.White);
+                }
+                else if (roomNumber == 2)
+                {
+                    _spriteBatch.Draw(bathroomTexture, window, Color.White);
+                }
+                else if (roomNumber == 3)
+                {
+                    _spriteBatch.Draw(bedroomTexture, window, Color.White);
+                }
+                else
+                {
+                    _spriteBatch.Draw(kitchenTexture, window, Color.White);
+                }
+                _spriteBatch.Draw(tribbleGreyTexture, greyTribblerect, Color.White);
+                _spriteBatch.Draw(tribbleBrownTexture, tribbleBrownrect, Color.White);
+                _spriteBatch.Draw(tribbleCreamTexture, tribbleCreamrect, Color.White);
+                _spriteBatch.Draw(tribbleOrangeTexture, tribbleOrangerect, Color.White);
+
             }
-            else if (roomNumber == 3)
+            else if (screen == Screen.BlackHoleEnding)
             {
-                _spriteBatch.Draw(bedroomTexture, window, Color.White);
+                _spriteBatch.Draw(blackHoleTexture, window, Color.White);
+                _spriteBatch.DrawString(text, "The Orange tribble has gone to fast, and made a blackhole that sucked everything up!", new Vector2(10, 10), Color.Yellow);
+                _spriteBatch.DrawString(text, "The End", new Vector2(10, 50), Color.Yellow);
             }
-            else
-            {
-                _spriteBatch.Draw(kitchenTexture, window, Color.White);
-            }
-            _spriteBatch.Draw(tribbleGreyTexture, greyTribblerect, Color.White);
-            _spriteBatch.Draw(tribbleBrownTexture, tribbleBrownrect, Color.White);
-            _spriteBatch.Draw(tribbleCreamTexture, tribbleCreamrect, Color.White);
-            _spriteBatch.Draw(tribbleOrangeTexture, tribbleOrangerect, Color.White);
+
+
             _spriteBatch.End();
 
             // TODO: Add your drawing code here
