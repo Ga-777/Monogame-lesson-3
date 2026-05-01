@@ -12,6 +12,7 @@ namespace Monogame_lesson_3
         Intro,
         TribbleYard,
         EndScreen,
+        openDoorEnding,
         BlackHoleEnding
 
     }
@@ -25,11 +26,11 @@ namespace Monogame_lesson_3
         Screen screen;
         Vector2 tribbleGreySpeed, tribbleBrownSpeed, tribbleOrangeSpeed, tribbleCreamSpeed;
         Rectangle window, greyTribblerect, tribbleBrownrect, tribbleCreamrect,tribbleOrangerect;
-        Texture2D tribbleGreyTexture, tribbleBrownTexture, tribbleCreamTexture, tribbleOrangeTexture, living_roomBackground, bedroomTexture, bathroomTexture, kitchenTexture, introTexture, blackHoleTexture;
+        Texture2D tribbleGreyTexture, tribbleBrownTexture, tribbleCreamTexture, tribbleOrangeTexture, living_roomBackground, bedroomTexture, bathroomTexture, kitchenTexture, introTexture, blackHoleTexture, openDoorTexture;
         SoundEffect tribbleCoo, openingDoor;
         MouseState mouseState;
         Random locate = new Random(), room = new Random();
-        int roomNumber;
+        int roomNumber, doorsOpened = 0;
         SpriteFont text;
         public Game1()
         {
@@ -74,6 +75,7 @@ namespace Monogame_lesson_3
             introTexture = Content.Load<Texture2D>("intro");
             blackHoleTexture = Content.Load<Texture2D>("blackhole");
             text = Content.Load<SpriteFont>("text");
+            openDoorTexture = Content.Load<Texture2D>("opendoor");
 
             // TODO: use this.Content to load your game content here
         }
@@ -93,7 +95,7 @@ namespace Monogame_lesson_3
             // TODO: Add your update logic here
             if (screen == Screen.Intro)
             {
-                if (mouseState.LeftButton == ButtonState.Pressed)
+                if (mouseState.RightButton == ButtonState.Pressed)
                 {
                     screen = Screen.TribbleYard;
                 }
@@ -105,6 +107,10 @@ namespace Monogame_lesson_3
                 {
                     
                 }
+            }
+            else if (doorsOpened > 8 && screen == Screen.TribbleYard)
+            {
+                screen = Screen.openDoorEnding;
             }
             else if (screen == Screen.TribbleYard)
             {
@@ -130,6 +136,8 @@ namespace Monogame_lesson_3
                     roomNumber = room.Next(1, 4);
                     openingDoor.Play();
                     tribbleCoo.Play();
+                    doorsOpened++;
+
                 }
                 else if (tribbleBrownrect.Top < window.Top || tribbleBrownrect.Bottom > window.Bottom)
                 {
@@ -239,6 +247,12 @@ namespace Monogame_lesson_3
             {
                 _spriteBatch.Draw(blackHoleTexture, window, Color.White);
                 _spriteBatch.DrawString(text, "The Orange tribble has gone to fast, and made a blackhole that sucked everything up!", new Vector2(10, 10), Color.Yellow);
+                _spriteBatch.DrawString(text, "The End", new Vector2(10, 50), Color.Yellow);
+            }
+            else if (screen == Screen.openDoorEnding)
+            {
+                _spriteBatch.Draw(openDoorTexture, window, Color.White);
+                _spriteBatch.DrawString(text, "The tribbles have opened too many doors, and have escaped into the world!", new Vector2(10, 10), Color.Yellow);
                 _spriteBatch.DrawString(text, "The End", new Vector2(10, 50), Color.Yellow);
             }
 
